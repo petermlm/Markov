@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import re
 import random
 import sys
@@ -36,7 +38,7 @@ def cleanLine(regex_special, regex_ignored, line):
     return line.split()
 
 
-def makeNetwork():
+def makeNetwork(source_file):
     tokens_word2index = {}
     tokens_index2word = []
 
@@ -45,7 +47,7 @@ def makeNetwork():
     regex_ignored = re.compile("[" + "".join(ignored_chars) + "]")
 
     cindex = 0
-    with open("the_idiot") as fd:
+    with open(source_file) as fd:
         for line in fd:
             for token in cleanLine(regex_special, regex_ignored, line):
                 if token not in tokens_word2index:
@@ -63,7 +65,7 @@ def makeNetwork():
     cur = ""
     first_step = True
 
-    with open("the_idiot") as fd:
+    with open(source_file) as fd:
         for line in fd:
             for token in cleanLine(regex_special, regex_ignored, line):
                 if first_step:
@@ -118,14 +120,14 @@ def makeRandomText(network, tokens_index2word, words_num):
 
 
 if __name__ == "__main__":
-    network, tokens_index2word = makeNetwork()
+    if len(sys.argv) not in [2, 3]:
+        print("Usage: main.py source_file [words]")
 
-    # network = [
-    #     np.array([0.05, 0.8, 0.15]),
-    #     np.array([0.15, 0.05, 0.8]),
-    #     np.array([0.8, 0.15, 0.05])
-    # ]
-    #
-    # tokens_index2word = ["i", "am", "me"]
+    source_file = sys.argv[1]
 
-    makeRandomText(network, tokens_index2word, 100)
+    words_num = 100
+    if len(sys.argv) == 3:
+        words_num = int(sys.argv[2])
+
+    network, tokens_index2word = makeNetwork(source_file)
+    makeRandomText(network, tokens_index2word, words_num)
