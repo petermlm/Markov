@@ -108,11 +108,11 @@ def makeRandomText(network, tokens_index2word, words_num):
 
         # Determine next index
         rand_val = random.random()
-        next_prob_cum = 0
+        next_prob_cumul = 0
         for next_index, next_prob in enumerate(network[c_index]):
-            next_prob_cum += next_prob
+            next_prob_cumul += next_prob
 
-            if rand_val < next_prob_cum:
+            if rand_val < next_prob_cumul:
                 c_index = next_index
                 break
 
