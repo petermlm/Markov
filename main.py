@@ -21,6 +21,12 @@ ignored_chars = [
     ")"
 ]
 
+cap_chars = [
+    ".",
+    "!",
+    "?",
+]
+
 
 def cleanLine(regex_special, regex_ignored, line):
     line = line.strip()
@@ -83,6 +89,7 @@ def makeNetwork():
 def makeRandomText(network, tokens_index2word, words_num):
     c_index = random.randint(0, len(network)-1)
 
+    prev_word = ""
     for i in range(words_num):
         # Write current word
         c_word = tokens_index2word[c_index]
@@ -90,7 +97,12 @@ def makeRandomText(network, tokens_index2word, words_num):
         if i != 0 and c_word not in special_chars:
             sys.stdout.write(" ")
 
-        sys.stdout.write(c_word)
+        if i == 0 or prev_word in cap_chars or c_word == "i":
+            sys.stdout.write(c_word[0].upper() + c_word[1:])
+        else:
+            sys.stdout.write(c_word)
+
+        prev_word = c_word
 
         # Determine next index
         rand_val = random.random()
@@ -101,6 +113,8 @@ def makeRandomText(network, tokens_index2word, words_num):
             if rand_val < next_prob_cum:
                 c_index = next_index
                 break
+
+    sys.stdout.write("\n")
 
 
 if __name__ == "__main__":
