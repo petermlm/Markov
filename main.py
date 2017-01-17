@@ -41,36 +41,30 @@ def cleanLine(regex_special, regex_ignored, line):
 def makeNetwork(source_file):
     tokens_word2index = {}
     tokens_index2word = []
+    network = []
 
     # Read every word and build matrix
     regex_special = re.compile("[" + "".join(special_chars) + "]")
     regex_ignored = re.compile("[" + "".join(ignored_chars) + "]")
 
+    first_step = True
     cindex = 0
+    prev = ""
+    cur = ""
+
     with open(source_file) as fd:
         for line in fd:
             for token in cleanLine(regex_special, regex_ignored, line):
                 if token not in tokens_word2index:
                     tokens_word2index[token] = cindex
                     tokens_index2word.append(token)
+                    network.append(np.zeros(len(network) + 1))
                     cindex += 1
 
-    # Count
-    network = []
-    words_num = cindex
-    for i in range(words_num):
-        network.append(np.zeros(words_num))
-
-    prev = ""
-    cur = ""
-    first_step = True
-
-    with open(source_file) as fd:
-        for line in fd:
-            for token in cleanLine(regex_special, regex_ignored, line):
                 if first_step:
                     cur = token
                     first_step = False
+                    network[0][0] = 0
                     continue
 
                 prev = cur
@@ -78,6 +72,10 @@ def makeNetwork(source_file):
 
                 prev_index = tokens_word2index[prev]
                 cur_index = tokens_word2index[cur]
+
+                if len(network[prev_index]) <= cur_index:
+                    zeros_num = cur_index - len(network[prev_index]) + 1
+                    network[prev_index] = np.append(network[prev_index], np.zeros(zeros_num))
 
                 network[prev_index][cur_index] += 1
 
