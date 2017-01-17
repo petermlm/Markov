@@ -52,32 +52,40 @@ def makeNetwork(source_file):
     prev = ""
     cur = ""
 
-    with open(source_file) as fd:
-        for line in fd:
-            for token in cleanLine(regex_special, regex_ignored, line):
-                if token not in tokens_word2index:
-                    tokens_word2index[token] = cindex
-                    tokens_index2word.append(token)
-                    network.append(np.zeros(len(network) + 1))
-                    cindex += 1
+    # with open(source_file) as fd:
+    if source_file != None:
+        fd = open(source_file)
+    else:
+        fd = sys.stdin
 
-                if first_step:
-                    cur = token
-                    first_step = False
-                    network[0][0] = 0
-                    continue
+    for line in fd:
+        for token in cleanLine(regex_special, regex_ignored, line):
+            if token not in tokens_word2index:
+                tokens_word2index[token] = cindex
+                tokens_index2word.append(token)
+                network.append(np.zeros(len(network) + 1))
+                cindex += 1
 
-                prev = cur
+            if first_step:
                 cur = token
+                first_step = False
+                network[0][0] = 0
+                continue
 
-                prev_index = tokens_word2index[prev]
-                cur_index = tokens_word2index[cur]
+            prev = cur
+            cur = token
 
-                if len(network[prev_index]) <= cur_index:
-                    zeros_num = cur_index - len(network[prev_index]) + 1
-                    network[prev_index] = np.append(network[prev_index], np.zeros(zeros_num))
+            prev_index = tokens_word2index[prev]
+            cur_index = tokens_word2index[cur]
 
-                network[prev_index][cur_index] += 1
+            if len(network[prev_index]) <= cur_index:
+                zeros_num = cur_index - len(network[prev_index]) + 1
+                network[prev_index] = np.append(network[prev_index], np.zeros(zeros_num))
+
+            network[prev_index][cur_index] += 1
+
+    if source_file != None:
+        fd.close()
 
     # Normalize
     for i in range(len(network)):
@@ -121,7 +129,10 @@ if __name__ == "__main__":
     if len(sys.argv) not in [2, 3]:
         print("Usage: main.py source_file [words]")
 
-    source_file = sys.argv[1]
+    if sys.argv[1] == "-":
+        source_file = None
+    else:
+        source_file = sys.argv[1]
 
     words_num = 100
     if len(sys.argv) == 3:
