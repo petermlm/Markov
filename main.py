@@ -84,6 +84,9 @@ def makeNetwork(source_file):
 
             network[prev_index][cur_index] += 1
 
+    # Last word loops back to first
+    network[-1][0] += 1
+
     if source_file != None:
         fd.close()
 
