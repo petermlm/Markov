@@ -131,6 +131,7 @@ def makeRandomText(network, tokens_index2word, words_num):
 if __name__ == "__main__":
     if len(sys.argv) not in [2, 3]:
         print("Usage: main.py source_file [words]")
+        exit(1)
 
     if sys.argv[1] == "-":
         source_file = None
