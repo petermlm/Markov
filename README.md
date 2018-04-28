@@ -1,24 +1,24 @@
-This is a simple implementation of a text generator using Markov Chains. A
-Markov Chain, which is a probability distribution of the form:
+# Markov.py
+
+This is a simple implementation of a text generator using Markov Chains.
+
+A Markov Chain is a probability distribution of the form:
 
     P(Xn | Xn-1)
 
-Can be build from text. Like this, each state of the chain is a word, and each
-pair of words forms a transition.
-
-Given a particular text, a chain representing the transitions in words of a
-text built. Using that chain, random text is generated.
+Given some text, a chain can be built where each node represents a word and
+each transition represents the frequency of seeing word Xn after word Xn-1.
 
 # How to Use
 
-You'll just need Python3 and Numpy.
+Python3 and Numpy are needed.
 
 Usage:
 
-    main.py source_file [words]
+    markov.py source_file [words]
 
-Where `source_file` is a file with text from whichthe chain will be built, and
+Where `source_file` is a file with text from which the chain will be built, and
 words is an optional parameter which states the number of words in the
 generated text (defaults to 100).
 
-If `source_file` is "-", values are read from stdin.
+If `source_file` is "-", values are read from `stdin`.
