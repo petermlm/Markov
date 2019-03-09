@@ -8,87 +8,81 @@ import numpy as np
 
 
 special_chars = [
-    ".",
-    ",",
-    ";",
-    "!",
-    "?",
+    '.',
+    ',',
+    ';',
+    '!',
+    '?',
 ]
 
 ignored_chars = [
-    "\"",
-    "”",
-    "“",
-    "(",
-    ")"
+    '\'',
+    '"',
+    '”',
+    '“',
+    '(',
+    ')'
 ]
 
 cap_chars = [
-    ".",
-    "!",
-    "?",
+    '.',
+    '!',
+    '?',
 ]
 
 
-def cleanLine(regex_special, regex_ignored, line):
-    line = line.strip()
-    line = regex_special.sub(" \g<0> ", line)
-    line = regex_ignored.sub(" ", line)
-    line = line.lower()
-    return line.split()
+words_num = 100
 
 
-def makeNetwork(source_file):
+def tokenize(text, regex_special, regex_ignored):
+    text = text.strip()
+    text = regex_special.sub(' \g<0> ', text)
+    text = regex_ignored.sub(' ', text)
+    text = text.lower()
+    return text.split()
+
+
+def make_network(text):
     tokens_word2index = {}
     tokens_index2word = []
     network = []
 
     # Read every word and build matrix
-    regex_special = re.compile("[" + "".join(special_chars) + "]")
-    regex_ignored = re.compile("[" + "".join(ignored_chars) + "]")
+    regex_special = re.compile('[' + ''.join(special_chars) + ']')
+    regex_ignored = re.compile('[' + ''.join(ignored_chars) + ']')
 
     first_step = True
     cindex = 0
-    prev = ""
-    cur = ""
+    prev = ''
+    cur = ''
 
-    # with open(source_file) as fd:
-    if source_file != None:
-        fd = open(source_file)
-    else:
-        fd = sys.stdin
+    for token in tokenize(text, regex_special, regex_ignored):
+        if token not in tokens_word2index:
+            tokens_word2index[token] = cindex
+            tokens_index2word.append(token)
+            network.append(np.zeros(len(network) + 1))
+            cindex += 1
 
-    for line in fd:
-        for token in cleanLine(regex_special, regex_ignored, line):
-            if token not in tokens_word2index:
-                tokens_word2index[token] = cindex
-                tokens_index2word.append(token)
-                network.append(np.zeros(len(network) + 1))
-                cindex += 1
-
-            if first_step:
-                cur = token
-                first_step = False
-                network[0][0] = 0
-                continue
-
-            prev = cur
+        if first_step:
             cur = token
+            first_step = False
+            network[0][0] = 0
+            continue
 
-            prev_index = tokens_word2index[prev]
-            cur_index = tokens_word2index[cur]
+        prev = cur
+        cur = token
 
-            if len(network[prev_index]) <= cur_index:
-                zeros_num = cur_index - len(network[prev_index]) + 1
-                network[prev_index] = np.append(network[prev_index], np.zeros(zeros_num))
+        prev_index = tokens_word2index[prev]
+        cur_index = tokens_word2index[cur]
 
-            network[prev_index][cur_index] += 1
+        if len(network[prev_index]) <= cur_index:
+            zeros_num = cur_index - len(network[prev_index]) + 1
+            network[prev_index] = np.append(network[prev_index], np.zeros(zeros_num))
+
+        network[prev_index][cur_index] += 1
 
     # Last word loops back to first
     network[-1][0] += 1
-
-    if source_file != None:
-        fd.close()
 
     # Normalize
     for i in range(len(network)):
@@ -97,21 +91,22 @@ def makeNetwork(source_file):
     return network, tokens_index2word
 
 
-def makeRandomText(network, tokens_index2word, words_num):
-    c_index = random.randint(0, len(network)-1)
+def make_random_text(network, tokens_index2word, words_num):
+    c_index = random.randint(0, len(network) - 1)
+    output = ''
 
-    prev_word = ""
+    prev_word = ''
     for i in range(words_num):
         # Write current word
         c_word = tokens_index2word[c_index]
 
         if i != 0 and c_word not in special_chars:
-            sys.stdout.write(" ")
+            output += ' '
 
-        if i == 0 or prev_word in cap_chars or c_word == "i":
-            sys.stdout.write(c_word[0].upper() + c_word[1:])
+        if i == 0 or prev_word in cap_chars or c_word == 'i':
+            output += c_word[0].upper() + c_word[1:]
         else:
-            sys.stdout.write(c_word)
+            output += c_word
 
         prev_word = c_word
 
@@ -125,22 +120,40 @@ def makeRandomText(network, tokens_index2word, words_num):
                 c_index = next_index
                 break
 
-    sys.stdout.write("\n")
+    return output
 
 
-if __name__ == "__main__":
-    if len(sys.argv) not in [2, 3]:
+def markov(text):
+    network, tokens_index2word = make_network(text)
+    return make_random_text(network, tokens_index2word, words_num)
+
+
+def read(source=None):
+    if source is not None:
+        fd = open(source)
+    else:
+        fd = sys.stdin
+
+    text = fd.read()
+    return markov(text)
+
+
+if __name__ == '__main__':
+    argc = len(sys.argv)
+    if not (2 <= argc <= 3):
         print("Usage: main.py source_file [words]")
         exit(1)
 
     if sys.argv[1] == "-":
-        source_file = None
+        source = None
     else:
-        source_file = sys.argv[1]
+        source = sys.argv[1]
 
-    words_num = 100
     if len(sys.argv) == 3:
-        words_num = int(sys.argv[2])
+        try:
+            words_num = int(sys.argv[2])
+        except ValueError:
+            print('Word number not an int')
+            exit(1)
 
-    network, tokens_index2word = makeNetwork(source_file)
-    makeRandomText(network, tokens_index2word, words_num)
+    print(read(source))
