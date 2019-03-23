@@ -13,7 +13,7 @@ each transition represents the frequency of seeing word Xn after word Xn-1.
 
 Python3 and Numpy are needed.
 
-Usage:
+## Execute Script
 
     markov.py source_file [words]
 
@@ -22,3 +22,21 @@ words is an optional parameter which states the number of words in the
 generated text (defaults to 100).
 
 If `source_file` is "-", values are read from `stdin`.
+
+## Import
+
+You can import the script:
+
+    import markov
+
+And use one of the functions.
+
+    markov(text, words_num=100)
+
+This will read the string in `text` and output a generated text with
+`words_num` words.
+
+    read(source=None, words_num=100)
+
+This will read the text in the file given to `source` and outputs a generated
+text with `words_num` words. If `source` is `None`, read from `stdin`.

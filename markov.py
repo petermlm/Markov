@@ -123,19 +123,29 @@ def make_random_text(network, tokens_index2word, words_num):
     return output
 
 
-def markov(text):
+def markov(text, words_num=100):
+    """
+    Reads the string in `text` and returns a generated text with `words_num`
+    words.
+    """
+
     network, tokens_index2word = make_network(text)
     return make_random_text(network, tokens_index2word, words_num)
 
 
-def read(source=None):
+def read(source=None, words_num=100):
+    """
+    Reads the text in the file given to `source` and returns a generated text
+    with `words_num` words. If `source` is `None`, read from `stdin`.
+    """
+
     if source is not None:
         fd = open(source)
     else:
         fd = sys.stdin
 
     text = fd.read()
-    return markov(text)
+    return markov(text, words_num)
 
 
 if __name__ == '__main__':
@@ -156,4 +166,9 @@ if __name__ == '__main__':
             print('Word number not an int')
             exit(1)
 
-    print(read(source))
+        generated = read(source, words_num=words_num)
+
+    else:
+        generated = read(source)
+
+    print(generated)
