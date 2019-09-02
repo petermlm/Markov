@@ -34,12 +34,16 @@ cap_chars = [
 words_num = 100
 
 
-def tokenize(text, regex_special, regex_ignored):
+def tokenize(text):
+    regex_special = re.compile('[' + ''.join(special_chars) + ']')
+    regex_ignored = re.compile('[' + ''.join(ignored_chars) + ']')
+
     text = text.strip()
     text = regex_special.sub(' \g<0> ', text)
     text = regex_ignored.sub(' ', text)
-    text = text.lower()
-    return text.split()
+    text = text.lower().split()
+
+    return text
 
 
 def make_network(text):
@@ -48,15 +52,12 @@ def make_network(text):
     network = []
 
     # Read every word and build matrix
-    regex_special = re.compile('[' + ''.join(special_chars) + ']')
-    regex_ignored = re.compile('[' + ''.join(ignored_chars) + ']')
-
     first_step = True
     cindex = 0
     prev = ''
     cur = ''
 
-    for token in tokenize(text, regex_special, regex_ignored):
+    for token in tokenize(text):
         if token not in tokens_word2index:
             tokens_word2index[token] = cindex
             tokens_index2word.append(token)

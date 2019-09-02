@@ -7,5 +7,4 @@ setup(name='Markov',
       description='Markov Text Generation',
       author='Pedro Melgueira',
       py_modules=['markov'],
-      install_requires=['numpy==1.11.3'],
-)
+      install_requires=['numpy==1.11.3'])
