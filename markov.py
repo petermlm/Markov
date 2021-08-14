@@ -8,26 +8,19 @@ import numpy as np
 
 
 special_chars = [
-    '.',
-    ',',
-    ';',
-    '!',
-    '?',
+    ".",
+    ",",
+    ";",
+    "!",
+    "?",
 ]
 
-ignored_chars = [
-    '\'',
-    '"',
-    '”',
-    '“',
-    '(',
-    ')'
-]
+ignored_chars = ["'", '"', "”", "“", "(", ")"]
 
 cap_chars = [
-    '.',
-    '!',
-    '?',
+    ".",
+    "!",
+    "?",
 ]
 
 
@@ -35,12 +28,12 @@ words_num = 100
 
 
 def tokenize(text):
-    regex_special = re.compile('[' + ''.join(special_chars) + ']')
-    regex_ignored = re.compile('[' + ''.join(ignored_chars) + ']')
+    regex_special = re.compile("[" + "".join(special_chars) + "]")
+    regex_ignored = re.compile("[" + "".join(ignored_chars) + "]")
 
     text = text.strip()
-    text = regex_special.sub(' \g<0> ', text)
-    text = regex_ignored.sub(' ', text)
+    text = regex_special.sub(" \g<0> ", text)
+    text = regex_ignored.sub(" ", text)
     text = text.lower().split()
 
     return text
@@ -54,8 +47,8 @@ def make_network(text):
     # Read every word and build matrix
     first_step = True
     cindex = 0
-    prev = ''
-    cur = ''
+    prev = ""
+    cur = ""
 
     for token in tokenize(text):
         if token not in tokens_word2index:
@@ -94,17 +87,17 @@ def make_network(text):
 
 def make_random_text(network, tokens_index2word, words_num):
     c_index = random.randint(0, len(network) - 1)
-    output = ''
+    output = ""
 
-    prev_word = ''
+    prev_word = ""
     for i in range(words_num):
         # Write current word
         c_word = tokens_index2word[c_index]
 
         if i != 0 and c_word not in special_chars:
-            output += ' '
+            output += " "
 
-        if i == 0 or prev_word in cap_chars or c_word == 'i':
+        if i == 0 or prev_word in cap_chars or c_word == "i":
             output += c_word[0].upper() + c_word[1:]
         else:
             output += c_word
@@ -149,7 +142,7 @@ def read(source=None, words_num=100):
     return markov(text, words_num)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     argc = len(sys.argv)
     if not (2 <= argc <= 3):
         print("Usage: main.py source_file [words]")
@@ -164,7 +157,7 @@ if __name__ == '__main__':
         try:
             words_num = int(sys.argv[2])
         except ValueError:
-            print('Word number not an int')
+            print("Word number not an int")
             exit(1)
 
         generated = read(source, words_num=words_num)

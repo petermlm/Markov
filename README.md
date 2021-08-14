@@ -40,3 +40,13 @@ This will read the string in `text` and output a generated text with
 
 This will read the text in the file given to `source` and outputs a generated
 text with `words_num` words. If `source` is `None`, read from `stdin`.
+
+# Style
+
+To format, [Black](https://github.com/psf/black) is used.
+
+# Tests
+
+Simply run:
+
+    python3 tests.py
