@@ -8,4 +8,4 @@ setup(name='Markov',
       author='Pedro Melgueira',
       author_email='pm@pedromelgueira.com',
       py_modules=['markov'],
-      install_requires=['numpy==1.21.2'])
+      install_requires=['numpy==1.22.0'])
